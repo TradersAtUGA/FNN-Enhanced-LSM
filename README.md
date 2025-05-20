@@ -23,7 +23,7 @@ To see findings and results check `Conclusions.pdf`
 4. Run the project  
    python main.py
 
-### Configurable Parameters
+## Configurable Parameters
 
 You can customize the simulation by editing the following variables in `main.py`:
 
