@@ -10,7 +10,7 @@ To see findings and results check `Conclusions.pdf`
 
 
 1. Clone the repository  
-   git clone https://github.com/TradersAtUGA/FNN-Enhanced-LSM.git
+   git clone https://github.com/TradersAtUGA/FNN-Enhanced-LSM.git   
    cd your-repo-name
 
 2. Create a virtual environment  
