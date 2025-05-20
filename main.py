@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 
 from enum import Enum
 
-from least_square_trad import lsm_traditional
-from least_square_fnn import lsm_fnn
-from binomial_tree import binomial_tree
+from montecarlo.src.least_square_trad import lsm_traditional
+from montecarlo.src.least_square_fnn import lsm_fnn
+from montecarlo.src.binomial_tree import binomial_tree
 
 class OptionType(Enum):
     PUT = "put"
