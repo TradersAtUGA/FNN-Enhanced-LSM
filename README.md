@@ -1,8 +1,6 @@
-# FNN-Enhanced LSM for American Option Pricing
+# DeepBermuda
 
-This project explores a modern approach to pricing American-style options, which are challenging to value due to their early exercise features.
-
-Rather than relying on traditional techniques, we integrated machine learning by replacing the standard regression model with a neural network. This shift enabled a more flexible and data-driven estimation of future payoffs, resulting in a more robust and accurate valuation framework.
+DeepBermuda is a neural network-enhanced implementation of the Longstaff-Schwartz Monte Carlo (LSM) method for pricing Bermudan options, with a focus on high-dimensional, over-the-counter (OTC) derivatives. This project extends traditional LSM by replacing polynomial regression with a feedforward neural network to more accurately estimate continuation values in complex multi-asset settings. It is specifically designed to handle basket-style Bermudan options with many underlyings, reflecting real-world OTC structures where early exercise occurs at discrete intervals. The goal is to explore the intersection of deep learning and advanced option pricing for flexible, high-dimensional derivatives.
 
 To see findings and results check `Conclusions.pdf`
 
