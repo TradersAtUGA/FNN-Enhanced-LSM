@@ -6,9 +6,9 @@ def lsm_traditional(S_paths, K, r, dt, option_type, poly_degree):
     N = N_plus_1 - 1
 
     # find payoff of each path
-    if option_type == 'put':
+    if option_type.value == "put":
         payoff = np.maximum(K - S_paths, 0)
-    elif option_type == 'call':
+    elif option_type.value == 'call':
         payoff = np.maximum(S_paths - K, 0)
     else:
         raise ValueError("option_type must be 'put' or 'call'")

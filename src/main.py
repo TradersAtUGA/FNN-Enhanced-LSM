@@ -24,8 +24,8 @@ def generate_gbm_paths(S0, ir, sigma, T, N, M):
 
 
 def main():
-    num_of_paths = 100  # num of simulated paths
-    num_of_steps = 365  # num of time steps
+    num_of_paths = 10_000  # num of simulated paths
+    num_of_steps = 2_000  # num of time steps
     time_to_exp = 1  # time to expiration
     init_stock_price = 100  # initial stock price
     drift = 0.0417  # drift (assumed to equal risk-free interest rate b/c black scholes assumes risk-neutral)
@@ -34,17 +34,23 @@ def main():
     strike_price = 110  # strike price
     time_step = time_to_exp / num_of_steps  # time step
     poly_degree = 3  # degree of polynomial regression
-    option_type = OptionType.CALL 
+    option_type = OptionType.CALL  
 
     # Paths used for LSM
-    S_paths = generate_gbm_paths()
+    S_paths = generate_gbm_paths(init_stock_price, drift, volatility, time_to_exp, num_of_steps, num_of_paths)
 
-    poly_price = lsm_traditional(S_paths)
-    fnn_price = lsm_fnn(S_paths)
+    poly_price3 = lsm_traditional(S_paths, strike_price, risk_free_interest, time_step, option_type, 3)
+    poly_price2 = lsm_traditional(S_paths, strike_price, risk_free_interest, time_step, option_type, 2)
+    poly_price1 = lsm_traditional(S_paths, strike_price, risk_free_interest, time_step, option_type, 1)
+    # fnn_price = lsm_fnn(S_paths)
 
-    binomial_price = binomial_tree() # Baseline for results
+    binomial_price = binomial_tree(init_stock_price, strike_price, time_to_exp, risk_free_interest, volatility, num_of_steps, option_type) # Baseline for results
 
 
+    print(f"Binomial Price: {binomial_price}")
+    print(f"Poly Price 3-degree: {poly_price3}")
+    print(f"Poly Price 2-degree {poly_price2}")
+    print(f"Poly Price 1-degree {poly_price1}")
     # Uncomment this for plot of GBM paths
     # t_grid = np.linspace(0, T, N + 1)
     # plt.figure(figsize=(10, 6))
