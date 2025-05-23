@@ -1,8 +1,8 @@
-from montecarlo.config import Config
-from montecarlo.core import binomial_tree 
-from montecarlo.core import generate_gbm_paths
-from montecarlo.core import lsm_traditional
-from montecarlo.core import lsm_global_fnn
+from config import Config
+from core import binomial_tree 
+from core import generate_gbm_paths
+from core import lsm_traditional
+from core import lsm_global_fnn
 
 
 def main():
@@ -24,14 +24,14 @@ def main():
 
     binomial_price = binomial_tree(cfg.init_stock_price, cfg.strike_price, cfg.time_to_exp, cfg.risk_free_interest, cfg.volatility, cfg.num_of_steps, cfg.option_side)
     
-    fnn_price = lsm_global_fnn(S_paths, cfg.strike_price, cfg.risk_free_interest, cfg.time_step, cfg.option_side, cfg.nn_layers, cfg.epochs)
+    # fnn_price = lsm_global_fnn(S_paths, cfg.strike_price, cfg.risk_free_interest, cfg.time_step, cfg.option_side, cfg.nn_layers, cfg.epochs)
     
     print(cfg.get_details())
     print(f"Binomial Price: {binomial_price}")
     print(f"Poly Price 3-degree: {poly_price3}")
     print(f"Poly Price 2-degree: {poly_price2}")
     print(f"Poly Price 1-degree: {poly_price1}")
-    print(f"Global - FNN Price: {fnn_price}")
+    # print(f"Global - FNN Price: {fnn_price}")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
-from montecarlo.enums import OptionSide, OptionType
-from montecarlo.core import get_nn_sizes
+from enums import OptionSide, OptionType
+from core import get_nn_sizes
 
 
 class Config:
@@ -7,11 +7,11 @@ class Config:
     option_side = OptionSide.CALL
     option_type = OptionType.AMERICAN
     time_to_exp = 1
-    init_stock_price = 540
+    init_stock_price = 110
     drift = 0.0417
     risk_free_interest = 0.0417
     volatility = 0.2
-    strike_price = 600
+    strike_price = 100
 
     # LSM Configs
     poly_degree = 3
@@ -22,7 +22,7 @@ class Config:
     # LSM-FNN Configs
     dimensions = 1
     nn_layers = get_nn_sizes(dimensions)
-    epochs = 300
+    epochs = 400
 
     @classmethod
     def get_details(cls):
