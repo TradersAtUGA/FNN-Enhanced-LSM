@@ -1,2 +1,114 @@
-def lsm_fnn():
-    pass
+import numpy as np
+import torch
+import torch.nn as nn
+
+from neural_network import LSMContinuationNN
+
+
+def lsm_global_fnn(S_paths, K, r, dt, option_type, nn_layers, num_of_epochs=300):
+    """
+    This function creates only 1 global FNN trains the data on that then it makes its predictions
+    """
+    M, N_plus_1 = S_paths.shape
+    N = N_plus_1 - 1
+    d = 1 if S_paths.ndim == 2 else S_paths.shape[2] # multidimensions later
+
+    # Step 1: Compute intrisct value
+    if option_type.value == "put":
+        payoff = np.maximum(K - S_paths, 0)
+    elif option_type.value == "call":
+        payoff = np.maximum(S_paths - K, 0)
+    else:
+        raise ValueError("Option must either be put or call")
+    
+    # Initialize cashflow at expiry
+    cashflow = payoff[:, -1].copy()
+    exercise_time = np.full(M, N)
+
+    # Step 2: Collect training data (X = [S_t, t], Y = discounted cashflow)
+    X_all = []
+    Y_all = []
+
+    for t in range(N - 1, 0, -1):
+        alive = np.where(exercise_time > t)[0]
+        if len(alive) == 0:
+            continue
+
+        itm_mask = payoff[alive, t] > 0
+        if np.sum(itm_mask) == 0:
+            continue
+        itm_indices = alive[itm_mask]
+
+        S_t = S_paths[itm_indices, t]
+        t_norm = t / N
+
+        # For 1D input: shape [n, 2]
+        X_t = np.column_stack((S_t, np.full_like(S_t, t_norm)))
+        Y_t = cashflow[itm_indices] * np.exp(-r * dt * (exercise_time[itm_indices] - t))
+
+        X_all.append(X_t)
+        Y_all.append(Y_t)
+
+    X_all = np.vstack(X_all)
+    Y_all = np.hstack(Y_all).reshape(-1, 1)
+
+    X_tensor = torch.tensor(X_all, dtype=torch.float32)
+    Y_tensor = torch.tensor(Y_all, dtype=torch.float32)
+
+    # Step 3: Train global FNN
+    model = LSMContinuationNN(X_all.shape[1], nn_layers)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    loss_fn = nn.MSELoss()
+
+    for epoch in range(num_of_epochs):
+        model.train()
+        optimizer.zero_grad()
+        pred = model(X_tensor)
+        loss = loss_fn(pred, Y_tensor)
+        loss.backward()
+        optimizer.step()
+
+
+    # Step 4: Re-run backward induction using trained model
+    cashflow = payoff[:, -1].copy()
+    exercise_time = np.full(M, N)
+
+    for t in range(N - 1, 0, -1):
+        alive = np.where(exercise_time > t)[0]
+        if len(alive) == 0:
+            continue
+
+        itm_mask = payoff[alive, t] > 0
+        if np.sum(itm_mask) == 0:
+            continue
+        itm_indices = alive[itm_mask]
+
+        S_t = S_paths[itm_indices, t]
+        t_norm = t / N
+        X_pred = torch.tensor(np.column_stack((S_t, np.full_like(S_t, t_norm))), dtype=torch.float32)
+
+        with torch.no_grad():
+            continuation_value = model(X_pred).squeeze().numpy()
+
+        immediate_exercise = payoff[itm_indices, t]
+        exercise_now = immediate_exercise > continuation_value
+
+        exercise_indices = itm_indices[exercise_now]
+        cashflow[exercise_indices] = immediate_exercise[exercise_now]
+        exercise_time[exercise_indices] = t
+
+    # Step 5: Discount to present
+    option_values = cashflow * np.exp(-r * dt * exercise_time)
+    return np.mean(option_values)
+
+
+
+
+
+
+
+
+def lsm_local_fnn():
+    """
+    During the backwards induction step this function creates a local NN at each time step
+    """

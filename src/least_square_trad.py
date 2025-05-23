@@ -1,7 +1,6 @@
 import numpy as np
 
 def lsm_traditional(S_paths, K, r, dt, option_type, poly_degree):
-
     M, N_plus_1 = S_paths.shape
     N = N_plus_1 - 1
 
