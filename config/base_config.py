@@ -1,45 +1,85 @@
-from enums import OptionSide, OptionType
+import numpy as np
+from dataclasses import dataclass
+from enums import OptionSide, OptionType, ExerciseFrequency
 from core import get_nn_sizes
 
 
+@dataclass
 class Config:
-    # Option Configs
-    option_side = OptionSide.CALL
-    option_type = OptionType.AMERICAN
-    time_to_exp = 1
-    init_stock_price = 110
-    drift = 0.0417
-    risk_free_interest = 0.0417
-    volatility = 0.2
-    strike_price = 100
+    """
+    Class that controls all the params for options
+    """
+    option_type: OptionType = OptionType.BERMUDAN
+    option_side: OptionSide = OptionSide.CALL
+    exercise_frequency: ExerciseFrequency = ExerciseFrequency.MONTHLY
+    custom_exercise_points: list = None
+    exercise_points: list = None
+    time_to_exp: float = 1
+    init_stock_price: float = 110
+    drift: float = 0.0417
+    risk_free_interest: float = 0.0417
+    volatility: float = 0.2
+    strike_price: float = 100
+    poly_degree: int = 3
+    num_of_paths: int = 10_000
+    num_of_steps: int = 2000
+    dimensions: int = 1
+    epochs: int = 400
 
-    # LSM Configs
-    poly_degree = 3
-    num_of_paths = 10_000
-    num_of_steps = 2_000
-    time_step = time_to_exp / num_of_steps
 
-    # LSM-FNN Configs
-    dimensions = 1
-    nn_layers = get_nn_sizes(dimensions)
-    epochs = 400
+    def __post_init__(self):
+        self.time_step = self.time_to_exp / self.num_of_steps
+        self.nn_layers = get_nn_sizes(self.dimensions)
 
-    @classmethod
-    def get_details(cls):
+        if self.option_type == OptionType.BERMUDAN:
+            if self.exercise_frequency is None:
+                raise ValueError("Bermudan options require an exercise frequency.")
+        else:
+            if self.exercise_frequency is not None:
+                raise ValueError("Only Bermudan options should specify exercise frequency.")
+            
+        self.exercise_points = self.get_excercise_points()
+
+
+    def get_excercise_points(self):
+        if self.option_type != OptionType.BERMUDAN:
+            return None
+        
+        if self.excercise_frequency == ExerciseFrequency.QUARTERLY:
+            num_of_dates = 4
+        elif self.excercise_frequency == ExerciseFrequency.MONTHLY:
+            num_of_dates = 12
+        elif self.excercise_frequency == ExerciseFrequency.SEMI_MONTHLY:
+            num_of_dates = 24
+        elif self.excercise_frequency == ExerciseFrequency.CUSTOM:
+            if self.custom_exercise_points is not None:
+                return self.custom_exercise_points
+            else:
+                raise ValueError("Custom exercise points must be provided for custom frequency.")
+
+        else:
+            raise ValueError("Invalid or missing exercise frequency for Bermudan option.")
+
+        return np.linspace(0, self.num_of_steps, num_of_dates, dtype=int)
+    
+    
+    def get_details(self):
         return f"""
         Option Parameters:
-        - Number of paths: {cls.num_of_paths}
-        - Number of steps: {cls.num_of_steps}
-        - Time to expiration: {cls.time_to_exp}
-        - Initial stock price: {cls.init_stock_price}
-        - Drift: {cls.drift}
-        - Risk-free interest rate: {cls.risk_free_interest}
-        - Volatility: {cls.volatility}
-        - Strike price: {cls.strike_price}
-        - Time step (dt): {cls.time_step}
-        - Option side: {cls.option_side}
-        - Option type: {cls.option_type}
-        - Dimensions: {cls.dimensions}
-        - Neural Network Layers: {cls.nn_layers}
-        - Epochs: {cls.epochs}
+        - Number of paths: {self.num_of_paths}
+        - Number of steps: {self.num_of_steps}
+        - Time to expiration: {self.time_to_exp}
+        - Initial stock price: {self.init_stock_price}
+        - Drift: {self.drift}
+        - Risk-free interest rate: {self.risk_free_interest}
+        - Volatility: {self.volatility}
+        - Strike price: {self.strike_price}
+        - Time step (dt): {self.time_step}
+        - Option side: {self.option_side}
+        - Option type: {self.option_type}
+        - Excercise Frequency: {self.exercise_frequency}
+        - Excercise Points: {self.exercise_points}
+        - Dimensions: {self.dimensions}
+        - Neural Network Layers: {self.nn_layers}
+        - Epochs: {self.epochs}
         """
