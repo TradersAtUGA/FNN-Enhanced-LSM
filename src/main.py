@@ -46,21 +46,22 @@ def get_nn_sizes(d: int) -> int:
 
 
 def main():
-    num_of_paths = 10_000  # num of simulated paths
-    num_of_steps = 2_000  # num of time steps
-    time_to_exp = 1  # time to expiration
-    init_stock_price = 540  # initial stock price
-    drift = 0.0417  # drift (assumed to equal risk-free interest rate b/c black scholes assumes risk-neutral)
+    num_of_paths = 10_000  # number of simulated Monte Carlo paths
+    num_of_steps = 2_000  # number of time steps in each path
+    time_to_exp = 1  # time to expiration (in years)
+    init_stock_price = 540  # initial stock price of the underlying asset
+    drift = 0.0417  # drift (assumed to equal risk-free interest rate due to risk-neutral measure)
     risk_free_interest = 0.0417  # risk-free interest rate
-    volatility = 0.2  # volatility
-    strike_price = 600  # strike price
-    time_step = time_to_exp / num_of_steps  # time step
-    poly_degree = 3  # degree of polynomial regression
-    option_side = OptionSide.CALL
-    option_type = OptionType.AMERICAN
-    dimensions = 1
-    nn_layers = get_nn_sizes(dimensions)
-    epochs = 300
+    volatility = 0.2  # volatility of the underlying asset
+    strike_price = 600  # strike price of the option
+    time_step = time_to_exp / num_of_steps  # size of each time step
+    poly_degree = 3  # degree of polynomial regression used in baseline LSM
+    option_side = OptionSide.CALL  # whether it's a call or put option
+    option_type = OptionType.AMERICAN  # whether it's an American or European option
+    dimensions = 1  # number of underlying assets (1 = single asset)
+    nn_layers = get_nn_sizes(dimensions)  # feedforward neural net layer sizes based on input dimension
+    epochs = 300  # number of training epochs for the neural net
+
 
 
     OPTION_DETAILS = f"""

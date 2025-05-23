@@ -35,5 +35,10 @@ Note: These settings are for American Options
 - `risk_free_interest`: Risk-free interest rate
 - `volatility`: Annualized volatility of the stock
 - `strike_price`: Strike price of the option
+- `time_step`: Computed as `time_to_exp / num_of_steps`; represents time delta between steps
 - `poly_degree`: Degree of polynomial regression used in the LSM algorithm
-- `option_type`: Set the option type — use `OptionType.CALL` for a call option or `OptionType.PUT` for a put option
+- `option_side`: Direction of the option — use `OptionSide.CALL` for a call or `OptionSide.PUT` for a put
+- `option_type`: Set the option type — use `OptionType.AMERICAN` for American options or `OptionType.EUROPEAN` for European options
+- `dimensions`: Number of underlying assets (1 = single asset, >1 = basket option)
+- `nn_layers`: Feedforward neural network layer sizes based on `dimensions`
+- `epochs`: Number of training epochs for the neural network
