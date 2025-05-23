@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from neural_network import LSMContinuationNN
+from .neural_net import LSMContinuationNN
 
 
 def lsm_global_fnn(S_paths, K, r, dt, option_type, nn_layers, num_of_epochs=300):
