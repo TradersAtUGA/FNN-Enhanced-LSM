@@ -1,3 +1,4 @@
+from typing import Optional
 import numpy as np
 from dataclasses import dataclass
 from enums import OptionSide, OptionType, ExerciseFrequency
@@ -9,17 +10,17 @@ class Config:
     """
     Class that controls all the params for options
     """
-    option_type: OptionType = OptionType.BERMUDAN
-    option_side: OptionSide = OptionSide.CALL
-    exercise_frequency: ExerciseFrequency = ExerciseFrequency.MONTHLY
-    custom_exercise_points: list = None
-    exercise_points: list = None
+    option_type: OptionType = OptionType.AMERICAN
+    option_side: OptionSide = OptionSide.PUT
+    exercise_frequency: ExerciseFrequency = None
+    custom_exercise_points: Optional[np.ndarray] = None
+    exercise_points: Optional[np.ndarray] = None
     time_to_exp: float = 1
     init_stock_price: float = 110
     drift: float = 0.0417
     risk_free_interest: float = 0.0417
     volatility: float = 0.2
-    strike_price: float = 100
+    strike_price: float = 90
     poly_degree: int = 3
     num_of_paths: int = 10_000
     num_of_steps: int = 2000
@@ -45,13 +46,13 @@ class Config:
         if self.option_type != OptionType.BERMUDAN:
             return None
         
-        if self.excercise_frequency == ExerciseFrequency.QUARTERLY:
+        if self.exercise_frequency == ExerciseFrequency.QUARTERLY:
             num_of_dates = 4
-        elif self.excercise_frequency == ExerciseFrequency.MONTHLY:
+        elif self.exercise_frequency == ExerciseFrequency.MONTHLY:
             num_of_dates = 12
-        elif self.excercise_frequency == ExerciseFrequency.SEMI_MONTHLY:
+        elif self.exercise_frequency == ExerciseFrequency.SEMI_MONTHLY:
             num_of_dates = 24
-        elif self.excercise_frequency == ExerciseFrequency.CUSTOM:
+        elif self.exercise_frequency == ExerciseFrequency.CUSTOM:
             if self.custom_exercise_points is not None:
                 return self.custom_exercise_points
             else:
