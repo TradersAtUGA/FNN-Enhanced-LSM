@@ -3,7 +3,8 @@ from enums import OptionSide, OptionType
 
 def binomial_tree(S0, K, T, r, sigma, N, option_side, option_type, exercise_points=None) -> float:
     """
-    This binomial tree is the baseline for american options that are dependent on one underlying
+    This binomial tree is accepts American, European and Bermudan options
+    that are dependent on one underlying
     """
 
     dt = T / N

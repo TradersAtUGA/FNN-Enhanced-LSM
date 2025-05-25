@@ -15,17 +15,18 @@ class Config:
     exercise_frequency: ExerciseFrequency = None
     custom_exercise_points: Optional[np.ndarray] = None
     exercise_points: Optional[np.ndarray] = None
-    time_to_exp: float = 1
-    init_stock_price: float = 110
-    drift: float = 0.0417
-    risk_free_interest: float = 0.0417
-    volatility: float = 0.2
-    strike_price: float = 90
-    poly_degree: int = 3
-    num_of_paths: int = 10_000
-    num_of_steps: int = 2000
-    dimensions: int = 1
-    epochs: int = 400
+    time_to_exp: float = 0.25         # T  → time to expiration
+    init_stock_price: float = 80      # S₀ → initial stock price
+    strike_price: float = 110         # K  → strike price
+    drift: float = 0.15               # μ  → expected return of the underlying (not always used in risk-neutral pricing)
+    risk_free_interest: float = 0.10  # r  → risk-free interest rate
+    volatility: float = 0.1           # σ  → volatility of the underlying asset
+    poly_degree: int = 3              # d  → degree of polynomial used in regression (LSM)
+    num_of_paths: int = 10_000        # M  → number of Monte Carlo simulation paths
+    num_of_steps: int = 500           # N  → number of discrete time steps
+    dimensions: int = 1               # dₛ → number of underlying assets (1 for vanilla options)
+    epochs: int = 300                 # e  → number of training epochs (if using FNN)
+
 
 
     def __post_init__(self):

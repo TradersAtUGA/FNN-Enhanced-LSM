@@ -2,10 +2,25 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+from enums import OptionSide, OptionType
 from .neural_net import LSMContinuationNN
+from typing import Optional
 
 
-def lsm_global_fnn(S_paths, K, r, dt, option_type, nn_layers, num_of_epochs=300):
+def european_price(r: float, dt: float, N: int, payoff: np.ndarray) -> float:
+    """
+    Prices a European option using Monte Carlo — no regression needed.
+    Only uses final payoffs at maturity.
+    """
+    discount_factor = np.exp(-r * dt * N)
+    option_price = np.mean(payoff) * discount_factor
+
+    return option_price
+
+
+def lsm_global_fnn(S_paths: np.ndarray, K: float, r: float, dt: float, 
+                   option_side: OptionSide, option_type: OptionType, 
+                   exercise_points: Optional[np.ndarray], nn_layers: list, num_of_epochs: int) -> float:
     """
     This function creates only 1 global FNN trains the data on that then it makes its predictions
     """
@@ -14,12 +29,18 @@ def lsm_global_fnn(S_paths, K, r, dt, option_type, nn_layers, num_of_epochs=300)
     d = 1 if S_paths.ndim == 2 else S_paths.shape[2] # multidimensions later
 
     # Step 1: Compute intrisct value
-    if option_type.value == "put":
+    if option_side == OptionSide.PUT:
         payoff = np.maximum(K - S_paths, 0)
-    elif option_type.value == "call":
+    elif option_side == OptionSide.CALL:
         payoff = np.maximum(S_paths - K, 0)
     else:
         raise ValueError("Option must either be put or call")
+    
+
+    # Skip training and backward induction for European options — no early exercise allowed
+    if option_type == OptionType.EUROPEAN:
+        return european_price(r, dt, N, payoff)
+    
     
     # Initialize cashflow at expiry
     cashflow = payoff[:, -1].copy()
@@ -100,9 +121,6 @@ def lsm_global_fnn(S_paths, K, r, dt, option_type, nn_layers, num_of_epochs=300)
     # Step 5: Discount to present
     option_values = cashflow * np.exp(-r * dt * exercise_time)
     return np.mean(option_values)
-
-
-
 
 
 
