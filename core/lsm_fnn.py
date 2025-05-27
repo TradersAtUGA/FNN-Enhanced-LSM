@@ -76,8 +76,16 @@ def lsm_global_fnn(S_paths: np.ndarray, K: float, r: float, dt: float,
     X_tensor = torch.tensor(X_all, dtype=torch.float32)
     Y_tensor = torch.tensor(Y_all, dtype=torch.float32)
 
+
+    # Device to support gpu
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Move data to gpu if available
+    X_tensor = X_tensor.to(device)
+    Y_tensor = Y_tensor.to(device)
+
     # Step 3: Train global FNN
-    model = LSMContinuationNN(X_all.shape[1], nn_layers)
+    model = LSMContinuationNN(X_all.shape[1], nn_layers).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
     loss_fn = nn.MSELoss()
 
@@ -106,10 +114,10 @@ def lsm_global_fnn(S_paths: np.ndarray, K: float, r: float, dt: float,
 
         S_t = S_paths[itm_indices, t]
         t_norm = t / N
-        X_pred = torch.tensor(np.column_stack((S_t, np.full_like(S_t, t_norm))), dtype=torch.float32)
+        X_pred = torch.tensor(np.column_stack((S_t, np.full_like(S_t, t_norm))), dtype=torch.float32).to(device)
 
         with torch.no_grad():
-            continuation_value = model(X_pred).squeeze().numpy()
+            continuation_value = model(X_pred).squeeze().cpu().numpy()
 
         immediate_exercise = payoff[itm_indices, t]
         exercise_now = immediate_exercise > continuation_value
