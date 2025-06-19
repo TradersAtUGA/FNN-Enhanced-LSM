@@ -23,7 +23,7 @@ class Config:
     volatility: float = 0.1           # σ  → volatility of the underlying asset
     poly_degree: int = 3              # d  → degree of polynomial used in regression (LSM)
     num_of_paths: int = 10_000        # M  → number of Monte Carlo simulation paths
-    num_of_steps: int = 1000          # N  → number of discrete time steps
+    num_of_steps: int = 250          # N  → number of discrete time steps
     dimensions: int = 1               # dₛ → number of underlying assets (1 for vanilla options)
     epochs: int = 300                 # e  → number of training epochs (if using FNN)
 
