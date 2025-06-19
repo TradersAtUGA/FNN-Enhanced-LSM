@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 def generate_gbm_paths(S0, ir, sigma, T, N, M):
     """
