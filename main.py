@@ -17,7 +17,7 @@ def main():
     # Paths used for LSM
     S_paths = generate_gbm_paths(
         S0=cfg.init_stock_price, 
-        ir=cfg.drift, 
+        ir=cfg.risk_free_interest, 
         sigma=cfg.volatility, 
         T=cfg.time_to_exp, 
         N=cfg.num_of_steps, 

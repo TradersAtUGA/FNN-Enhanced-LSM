@@ -27,5 +27,9 @@ The documentation for the params is in the `config_docs.md` file
 
 You can customize the params by editing the `config.yaml` file
 
+## Notes to user
 
+Due to the nature of American options—being exercisable at any time—it is extremely difficult and often unrealistic to accurately price a multi-asset American option basket.
+
+If you attempt to test such a configuration, be aware that it may consume a significant amount of computational resources.
 

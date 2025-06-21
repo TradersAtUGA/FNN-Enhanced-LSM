@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 import numpy as np
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enums import OptionSide, OptionType, ExerciseFrequency
 from core import get_nn_sizes
 
@@ -10,23 +10,32 @@ class Config:
     """
     Class that controls all the params for options
     """
+    # === Option Configs ===
     option_type: OptionType = OptionType.AMERICAN
     option_side: OptionSide = OptionSide.PUT
+    dimensions: int = 1               # dₛ → number of underlying assets (1 for vanilla options)
+    risk_free_interest: float = 0.10  # r  → risk-free interest rate
+    time_to_exp: float = 0.25         # T  → time to expiration
+
+    # === Bermudan Configs ===
     exercise_frequency: ExerciseFrequency = None
     custom_exercise_points: Optional[np.ndarray] = None
     exercise_points: Optional[np.ndarray] = None
-    time_to_exp: float = 0.25         # T  → time to expiration
-    init_stock_price: float = 80      # S₀ → initial stock price
-    strike_price: float = 110         # K  → strike price
-    drift: float = 0.15               # μ  → expected return of the underlying (not always used in risk-neutral pricing)
-    risk_free_interest: float = 0.10  # r  → risk-free interest rate
-    volatility: float = 0.1           # σ  → volatility of the underlying asset
-    poly_degree: int = 3              # d  → degree of polynomial used in regression (LSM)
-    num_of_paths: int = 10_000        # M  → number of Monte Carlo simulation paths
-    num_of_steps: int = 250          # N  → number of discrete time steps
-    dimensions: int = 1               # dₛ → number of underlying assets (1 for vanilla options)
-    epochs: int = 300                 # e  → number of training epochs (if using FNN)
 
+    # === Multi-dim Configs ===
+    init_stock_prices: np.ndarray = np.array([80])      # S₀ → initial stock price
+    strike_prices: np.ndarray = np.array([110])         # K  → strike price
+    volatilities: np.ndarray = np.array([0.1])           # σ  → volatility of the underlying asset
+    
+    # === LSM Configs ===
+    num_of_paths: int = 10_000        # M  → number of Monte Carlo simulation paths
+    num_of_steps: int = 250           # N  → number of discrete time steps
+    poly_degree: int = 3              # Degree of polynomial used in regression (LSM)
+
+    # === FNN Configs ===
+    epochs: int = 300                 # e  → number of training epochs (if using FNN)
+    time_step: float = field(init=False)
+    nn_layers: List[int] = field(init=False)
 
 
     def __post_init__(self):
@@ -54,7 +63,7 @@ class Config:
         elif self.exercise_frequency == ExerciseFrequency.SEMI_MONTHLY:
             num_of_dates = 24
         elif self.exercise_frequency == ExerciseFrequency.CUSTOM:
-            if self.custom_exercise_points is not None:
+            if self.custom_exercise_points:
                 return self.custom_exercise_points
             else:
                 raise ValueError("Custom exercise points must be provided for custom frequency.")
