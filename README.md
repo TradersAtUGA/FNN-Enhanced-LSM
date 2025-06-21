@@ -23,22 +23,9 @@ To see findings and results check `Conclusions.pdf`
 
 ## Configurable Parameters
 
-You can customize the simulation by editing the following variables in `main.py`:
+The documentation for the params is in the `config_docs.md` file
 
-Note: These settings are for American Options
+You can customize the params by editing the `config.yaml` file
 
-- `num_of_paths`: Number of simulated paths (e.g. 100)
-- `num_of_steps`: Number of time steps per path (e.g. 365 for daily)
-- `time_to_exp`: Time to expiration (in years)
-- `init_stock_price`: Initial stock price
-- `drift`: Expected return (assumed to be equal to the risk-free rate under risk-neutral measure)
-- `risk_free_interest`: Risk-free interest rate
-- `volatility`: Annualized volatility of the stock
-- `strike_price`: Strike price of the option
-- `time_step`: Computed as `time_to_exp / num_of_steps`; represents time delta between steps
-- `poly_degree`: Degree of polynomial regression used in the LSM algorithm
-- `option_side`: Direction of the option — use `OptionSide.CALL` for a call or `OptionSide.PUT` for a put
-- `option_type`: Set the option type — use `OptionType.AMERICAN` for American options or `OptionType.EUROPEAN` for European options
-- `dimensions`: Number of underlying assets (1 = single asset, >1 = basket option)
-- `nn_layers`: Feedforward neural network layer sizes based on `dimensions`
-- `epochs`: Number of training epochs for the neural network
+
+
