@@ -1,0 +1,29 @@
+#config file
+
+# === General Option Configs ===
+option_type: "BERMUDAN"
+option_side: "PUT"
+dimensions: 5
+risk_free_interest: 0.05
+time_to_exp: 0.25
+
+
+# === Bermudan Configs ===
+exercise_frequency: "MONTHLY"
+custom_exercise_points: 
+
+
+# === Option Vals ===
+init_stock_prices: [80, 82, 78, 81, 83]
+strike_prices: [110, 110, 110, 110, 110]
+volatilities: [0.1, 0.12, 0.09, 0.11, 0.1]
+
+
+# === LSM Configs ===
+num_of_paths: 10000
+num_of_steps: 250
+poly_degree: 3
+
+
+# === FNN Configs ===
+epochs: 300
