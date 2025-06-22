@@ -1,1 +1,1 @@
-from .option_types import OptionSide, OptionType, ExerciseFrequency
+from .option_types import OptionSide, OptionType, ExerciseFrequency, CorrelationType

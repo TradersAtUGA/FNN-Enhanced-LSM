@@ -6,7 +6,6 @@ class OptionType(Enum):
     BERMUDAN = 'bermudan'
     EUROPEAN = 'european'
 
-
 # Only needed if the option type is bermudan
 class ExerciseFrequency(Enum):
     MONTHLY = 'monthly'
@@ -14,7 +13,11 @@ class ExerciseFrequency(Enum):
     SEMI_MONTHLY = 'semi_monthly'
     CUSTOM = 'custom'  # optional override
 
-
 class OptionSide(Enum):
     CALL = 'call'
     PUT = 'put'
+
+class CorrelationType(Enum):
+    UNIFORM = "uniform",
+    IDENTITY = "identity",
+    CUSTOM = "custom"

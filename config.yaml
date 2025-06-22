@@ -9,12 +9,17 @@ time_to_exp: 0.25
 
 # === Bermudan Configs ===
 exercise_frequency: "MONTHLY"
-custom_exercise_points: null
+exercise_points: null
 
 # === Option Vals ===
 init_stock_prices: [80, 82, 78, 81, 83]
 strike_prices: [110, 110, 110, 110, 110]
 volatilities: [0.1, 0.12, 0.09, 0.11, 0.1]
+
+# === Correlation Settings ===
+correlation_matrix: null
+correlation_type: "UNIFORM"
+correlation_rho: 0.3
 
 # === LSM Configs ===
 num_of_paths: 10000

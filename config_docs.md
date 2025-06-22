@@ -25,7 +25,7 @@ This document outlines the structure and valid values for the `config.yaml` file
 
 ## `dimensions`
 - **Type**: `int`  
-- Specifies the number of underlying assets to price.
+- Specifies the number of underlying assets to price. Put 1 for vanilla options
 - **Default**: `5`
 
 ---
@@ -58,9 +58,12 @@ This document outlines the structure and valid values for the `config.yaml` file
 
 ---
 
-## `custom_exercise_points`
-- **Type**: `Array[float]` *(TO-DO)*  
-- Define custom exercise times (in years) when `exercise_frequency` is set to `"CUSTOM"`.
+## `exercise_points`
+- **Type**: `Array[int]`  
+- Only applicable if `option_type = "BERMUDAN"` and `exercise_frequency = "CUSTOM"`.  
+- Specifies custom exercise times **in days**.  
+- **Example**: `[1, 50, 100, 300]` — each value represents a day on which early exercise is allowed.
+
 
 ---
 
@@ -109,7 +112,7 @@ This document outlines the structure and valid values for the `config.yaml` file
 
 ## `poly_degree`
 - **Type**: `int`  
-- Degree of the polynomial used in the regression step of the Longstaff-Schwartz method.
+- Degree of the polynomial used in the regression step of the Longstaff-Schwartz method (LSM).
 - **Default**: `3`
 
 ---
