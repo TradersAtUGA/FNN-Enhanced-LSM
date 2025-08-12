@@ -1,0 +1,27 @@
+
+        Option Parameters:
+        - Option type: OptionType.EUROPEAN
+        - Option side: OptionSide.PUT
+        - Dimensions: 5
+        - Inital prices: [80 82 78 81 83]
+        - Strike prices: [110 110 110 110 110]
+        - Volatilities: [0.1  0.12 0.09 0.11 0.1 ]
+        - Risk-free interest rate: 0.05
+        - Time to expiration: 0.25
+        - Excercise Frequency: None
+        - Excercise Points: None
+        - Correlation Type: CorrelationType.UNIFORM
+        - Correlation Rho: 0.3
+        - Correlation Matrix: [[1.  0.3 0.3 0.3 0.3]
+ [0.3 1.  0.3 0.3 0.3]
+ [0.3 0.3 1.  0.3 0.3]
+ [0.3 0.3 0.3 1.  0.3]
+ [0.3 0.3 0.3 0.3 1. ]]
+        
+        Model Parameters:  
+        - Number of paths: 500
+        - Number of steps: 50 
+        - Poly degree: 3      
+        - Neural Network Layers: [64, 32, 16]
+        - Epochs: 15
+        141.742319

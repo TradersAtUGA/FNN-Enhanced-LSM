@@ -1,0 +1,23 @@
+
+        Option Parameters:
+        - Option type: OptionType.BERMUDAN
+        - Option side: OptionSide.PUT
+        - Dimensions: 1
+        - Inital prices: [80]
+        - Strike prices: [110]
+        - Volatilities: [0.1]
+        - Risk-free interest rate: 0.05
+        - Time to expiration: 0.25
+        - Excercise Frequency: ExerciseFrequency.MONTHLY
+        - Excercise Points: [ 0  4  9 13 18 22 27 31 36 40 45 50]
+        - Correlation Type: CorrelationType.UNIFORM
+        - Correlation Rho: 0.3
+        - Correlation Matrix: None
+        
+        Model Parameters:  
+        - Number of paths: 500
+        - Number of steps: 50 
+        - Poly degree: 3      
+        - Neural Network Layers: [32, 16, 8]
+        - Epochs: 15
+        28.837665

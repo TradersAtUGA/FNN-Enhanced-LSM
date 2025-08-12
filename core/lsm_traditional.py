@@ -10,7 +10,7 @@ def should_exercise_early(t: int, option_style: OptionType, excercise_pts: Optio
     return False
 
 
-def lsm_traditional(S_paths: np.ndarray, K: float, r: float, dt: float, poly_degree: int, 
+def lsm_traditional(S_paths: np.ndarray, K: np.ndarray, r: float, dt: float, poly_degree: int, 
                     option_side: OptionSide, option_type: OptionType, 
                     exercise_points: Optional[np.ndarray]) -> float:
     

@@ -2,14 +2,14 @@
 # for documentation see config_docs.md
 
 # === General Option Configs ===
-option_type: "BERMUDAN"
+option_type: "EUROPEAN"
 option_side: "PUT"
 dimensions: 5
 risk_free_interest: 0.05
 time_to_exp: 0.25
 
 # === Bermudan Configs ===
-exercise_frequency: "MONTHLY"
+exercise_frequency: null
 exercise_points: null
 
 # === Option Vals ===
