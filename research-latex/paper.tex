@@ -1,0 +1,205 @@
+\documentclass[11pt]{article}
+
+% ----------------------------
+% Packages
+% ----------------------------
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{authblk}
+
+% ----------------------------
+% Theorem Environments
+% ----------------------------
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[section]
+
+% ----------------------------
+% Title Info
+% ----------------------------
+\title{\textbf{Pricing Multi-Dimension Bermudan Options LSM-FNN vs LSM-Poly}}
+
+\author[1]{Brennan Davenport}
+\author[1]{Nathaniel Levy}
+
+\affil[1]{University of Georgia, USA \\
+\texttt{\{Brennan.Davenport@uga.edu, Nathaniel.Levy@uga.edu\}}}
+
+\date{\today}
+
+
+% ----------------------------
+% Document
+% ----------------------------
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We study \ldots  
+Briefly state the problem, your approach, and the main results.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Explain the problem, why it matters, and what your contribution is.
+A common structure:
+\begin{itemize}
+    \item What problem are you solving?
+    \item Why is it hard / interesting?
+    \item What do you contribute?
+\end{itemize}
+
+\section{Related Work}
+\label{sec:related}
+
+Discuss prior approaches and how your work differs.
+Cite papers using \cite{example_reference}.
+
+\section{Mathematical Setup}
+\label{sec:setup}
+
+
+Let us first introduce a few definitions and assumptions. Our goal is to price multiple Bermudan options. 
+For concreteness, we will refer to this collection as a basket of Bermudan options, or simply a basket option.
+
+To make the model well-defined, we assume that the risk-free interest rate satisfies \(r \ge 0\). 
+Next, we define a set of exercise times
+\[
+\mathcal{T} \subset [0, T],
+\] 
+which represents the dates at which the Bermudan option may be exercised.
+
+We now define the payoff function. Let  
+\[
+h(S_t) : \mathbb{R}_+^d \to \mathbb{R}
+\]  
+denote the payoff function, where \(S_t \in \mathbb{R}_+^d\) is the vector of underlying asset prices 
+at time \(t\). Furthermore, let \(d \in \mathbb{Z}_{\geq 1}\) be the number dimension of this basket.
+The form of \(h\) depends on whether the option is a put or a call. In this project, we 
+assume that the payoff is based on the average of the underlying assets.
+
+\begin{itemize}
+    \item PUT option:
+    \[
+    h(S_t) := \max\Big(K - \frac{1}{d} \sum_{j=1}^d S_t^{(j)}, 0\Big)
+    \]
+    \item CALL option:
+    \[
+    h(S_t) := \max\Big(\frac{1}{d} \sum_{j=1}^d S_t^{(j)} - K, 0\Big)
+    \]
+\end{itemize}
+
+Here, \(K \in \mathbb{R}_+\) is the strike price.
+
+With the payoff function defined, we can now define the value function for the basket option. Let
+\[
+V(t, S_t) : \mathcal{T} \times \mathbb{R}_+^d \to \mathbb{R}
+\]  
+denote the value function of a \(d\)-dimensional Bermudan option. 
+The vector \(S_t\) represents the asset prices at time \(t\).
+
+Now that we have defined the value function \(V\), we describe its form using the Bellman equation:
+\[
+V(t_i, S_{t_i}) = \max \Big( h(S_{t_i}),\; e^{-r (t_{i+1} - t_i)} \mathbb{E}[ V(t_{i+1}, S_{t_{i+1}}) \mid S_{t_i} ] \Big),
+\]
+
+where \(t_i \in \mathcal{T}\). This provides an inductive definition of \(V\). And we know that at the final 
+exercise date \(m = \max(\mathcal{T})\), we have
+\[
+V(m, S_m) = h(S_m),
+\]
+since there is no continuation beyond the last exercise date.
+
+We now focus on the second term of the Bellman equation:
+\[
+C_i(S_{t_i}) := e^{-r (t_{i+1} - t_i)} \mathbb{E}[ V(t_{i+1}, S_{t_{i+1}}) \mid S_{t_i} ].
+\]
+The factor \(e^{-r (t_{i+1}-t_i)}\) represents the discounted cash flow, which is straightforward
+(assuming a risk-free model). The challenging part is the conditional expectation
+\[
+\mathbb{E}[ V(t_{i+1}, S_{t_{i+1}}) \mid S_{t_i} ],
+\]
+which we refer to as the continuation value. In high dimensions, it is infeasible to compute this exactly using a lookup table.
+
+
+In the classical Longstaff-Schwartz method, this conditional expectation is approximated using polynomial regression:
+\[
+\mathbb{E}[ V(t_{i+1}, S_{t_{i+1}}) \mid S_{t_i} ] \approx \sum_{\alpha} \beta_\alpha \, \phi_\alpha(S_{t_i}),
+\]
+where \(\{\phi_\alpha\}\) is a set of polynomial basis functions of the 
+current asset prices, and \(\beta_\alpha\) are the regression coefficients.
+
+
+The goal of this research is to replace the polynomial regression approximation with a feedforward neural network (FNN):
+\[
+\mathbb{E}[ V(t_{i+1}, S_{t_{i+1}}) \mid S_{t_i} ] \approx \text{FNN}(S_{t_i}; \theta),
+\]
+where \(\theta\) represents the trainable parameters of the neural network. 
+This approach allows us to efficiently approximate the continuation value even in high-dimensional settings.
+
+
+
+\section{Methodology}
+\label{sec:method}
+
+Describe your algorithm / model.
+
+\subsection{Model}
+Explain the model intuition first, then equations.
+
+\subsection{Algorithm}
+Pseudo-code or step-by-step explanation.
+
+\section{Experiments / Results}
+\label{sec:results}
+
+\subsection{Experimental Setup}
+Data, parameters, assumptions.
+
+\subsection{Results}
+Tables, plots, and discussion.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ccc}
+\toprule
+Method & Price & Runtime \\
+\midrule
+LSM (Poly) & 10.42 & 0.31s \\
+LSM (FNN)  & 10.57 & 0.48s \\
+\bottomrule
+\end{tabular}
+\caption{Pricing results}
+\end{table}
+
+\section{Discussion}
+\label{sec:discussion}
+
+Interpret results, tradeoffs, limitations.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+Summarize findings and suggest future work.
+
+% ----------------------------
+% Bibliography
+% ----------------------------
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

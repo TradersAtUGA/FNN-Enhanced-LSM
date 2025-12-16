@@ -157,7 +157,10 @@ def lsm_global_fnn(S_paths: np.ndarray, K: float, r: float, dt: float,
 
 
     # Device to support gpu
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    try:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    except: # if torch doesnt have cuda installed this will throw error
+        device = torch.device("cpu")
 
     # Move data to gpu if available
     X_tensor = X_tensor.to(device)
