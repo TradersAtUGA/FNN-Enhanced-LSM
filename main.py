@@ -2,7 +2,6 @@ import time
 import torch
 import argparse
 
-
 import numpy as np
 from config import Config, load_config_from_yaml
 from enums import OptionType, ExerciseFrequency
@@ -10,7 +9,6 @@ from core import binomial_tree
 from core import generate_gbm_paths, generate_multidim_gbm_paths
 from core import lsm_traditional
 from core import lsm_global_fnn
-
 
 
 def get_args():
@@ -60,35 +58,48 @@ def main():
         nn_layers=cfg.nn_layers,
         num_of_epochs=cfg.epochs
     )
-    
 
+    poly_price = lsm_traditional(
+        S_paths=S_paths,
+        K=cfg.strike_prices,
+        r=cfg.risk_free_interest,
+        dt=cfg.time_step,
+        poly_degree=cfg.poly_degree,
+        option_side=cfg.option_side,
+        option_type=cfg.option_type,
+        exercise_points=cfg.exercise_points,
+        dim=cfg.dimensions
+    )
+    
+    
     with open(f"{args.config}.txt", "w") as fptr:
         fptr.write(str(cfg))
-        fptr.write(f"{fnn_price:6f}")
+        fptr.write(f"FNN Price: {fnn_price:6f}\n")
+        fptr.write(f"\tPoly Price: {poly_price:6f}")
 
 
-    # binomial_price = binomial_tree(cfg.init_stock_prices, cfg.strike_prices, cfg.time_to_exp, cfg.risk_free_interest, cfg.volatilities, cfg.num_of_steps, cfg.option_side, cfg.option_type, cfg.exercise_points)
+    binomial_price = binomial_tree(cfg.init_stock_prices, cfg.strike_prices, cfg.time_to_exp, cfg.risk_free_interest, cfg.volatilities, cfg.num_of_steps, cfg.option_side, cfg.option_type, cfg.exercise_points)
 
-    # poly_price1 = lsm_traditional(S_paths, cfg.strike_price, cfg.risk_free_interest, 
-    #                               cfg.time_step, cfg.poly_degree, cfg.option_side, cfg.option_type, cfg.exercise_points)
+    poly_price1 = lsm_traditional(S_paths, cfg.strike_price, cfg.risk_free_interest, 
+                                  cfg.time_step, cfg.poly_degree, cfg.option_side, cfg.option_type, cfg.exercise_points)
     
     
-    # start_time = time.time()
-    # fnn_price = lsm_global_fnn(S_paths, cfg.strike_price, cfg.risk_free_interest, cfg.time_step, cfg.option_side, cfg.option_type, cfg.exercise_points, cfg.nn_layers, cfg.epochs)
-    # end_time = time.time()
+    start_time = time.time()
+    fnn_price = lsm_global_fnn(S_paths, cfg.strike_price, cfg.risk_free_interest, cfg.time_step, cfg.option_side, cfg.option_type, cfg.exercise_points, cfg.nn_layers, cfg.epochs)
+    end_time = time.time()
 
-    # print(cfg.get_details())
-    # print(f"Binomial Tree Price: {binomial_price}")
-    # print(f"Poly LSM Price: {poly_price1:.6f}")
-    # print(f"Global FNN-Enhanced LSM Price: {fnn_price:6f}")
-    # print(f"Using {torch.cuda.get_device_name(0)}, took {end_time - start_time:.4f} seconds")
+    print(cfg.get_details())
+    print(f"Binomial Tree Price: {binomial_price}")
+    print(f"Poly LSM Price: {poly_price1:.6f}")
+    print(f"Global FNN-Enhanced LSM Price: {fnn_price:6f}")
+    print(f"Using {torch.cuda.get_device_name(0)}, took {end_time - start_time:.4f} seconds")
     
 
-    # print(f"Binomial Tree took {end - start:.4f} seconds")
-    # print(f"Poly Price 3-degree: {poly_price3}")
-    # print(f"Poly Price 2-degree: {poly_price2}")
-    # print(f"Poly Price 1-degree: {poly_price1}")
-    # print(f"Global - FNN Price: {fnn_price}")
+    print(f"Binomial Tree took {end - start:.4f} seconds")
+    print(f"Poly Price 3-degree: {poly_price3}")
+    print(f"Poly Price 2-degree: {poly_price2}")
+    print(f"Poly Price 1-degree: {poly_price1}")
+    print(f"Global - FNN Price: {fnn_price}")
 
 
 if __name__ == "__main__":

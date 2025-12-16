@@ -24,4 +24,5 @@
         - Poly degree: 3      
         - Neural Network Layers: [64, 32, 16]
         - Epochs: 15
-        141.742319
+        FNN Price: 141.598634
+	Poly Price: 141.598634

@@ -9,26 +9,46 @@ def should_exercise_early(t: int, option_style: OptionType, excercise_pts: Optio
         return t in excercise_pts
     return False
 
+def european_price(r: float, dt: float, N: int, payoff: np.ndarray) -> float:
+    """
+    Prices a European option using Monte Carlo — no regression needed.
+    Only uses final payoffs at maturity.
+    """
+    discount_factor = np.exp(-r * dt * N)
+    option_price = np.mean(payoff) * discount_factor
+
+    return option_price
+
+
+def compute_intrisic_val(S_paths: np.ndarray, K: float, option_side: OptionSide, d: int) -> np.ndarray:
+    K_scaler = K.sum()
+    basket_price = S_paths.sum(axis=2)
+    if option_side == OptionSide.PUT:
+        payoff = np.maximum(K_scaler - basket_price, 0)
+    elif option_side == OptionSide.CALL:
+        payoff = np.maximum(basket_price - K_scaler, 0)
+    else:
+        raise ValueError("Option must either be put or call")
+    
+    return payoff
 
 def lsm_traditional(S_paths: np.ndarray, K: np.ndarray, r: float, dt: float, poly_degree: int, 
                     option_side: OptionSide, option_type: OptionType, 
-                    exercise_points: Optional[np.ndarray]) -> float:
+                    exercise_points: Optional[np.ndarray], dim: int) -> float:
     
-    M, N_plus_1 = S_paths.shape
+
+    M, N_plus_1 = S_paths.shape[:2]
     N = N_plus_1 - 1
 
-    # find payoff of each path
-    if option_side == OptionSide.PUT:
-        payoff = np.maximum(K - S_paths, 0)
-    elif option_side == OptionSide.CALL:
-        payoff = np.maximum(S_paths - K, 0)
-    else:
-        raise ValueError("option_type must be 'put' or 'call'")
+    # Step 1: Compute intrisct value
+    payoff = compute_intrisic_val(S_paths, K, option_side, dim)
 
-    # payoff at expiration
+    # Skip training and backward induction for European options, no early exercise allowed
+    if option_type == OptionType.EUROPEAN:
+        return european_price(r, dt, N, payoff)
+
+    # Init cashflow and exercise times
     cashflow = payoff[:, -1].copy()
-
-    # time index on exercise
     exercise_time = np.full(M, N)
 
     # backwards induction
@@ -38,21 +58,21 @@ def lsm_traditional(S_paths: np.ndarray, K: np.ndarray, r: float, dt: float, pol
 
         # exclude paths that have alr been exercised
         alive = np.where(exercise_time > t)[0]
-        if len(alive) == 0:
+        if alive.size == 0:
             continue
 
         # only include itm paths for regression
         itm_mask = payoff[alive, t] > 0
-        if np.sum(itm_mask) == 0:
+        if not np.any(itm_mask):
             continue
-
         itm_indices = alive[itm_mask]
 
         # future discounted cash flows
         Y = cashflow[itm_indices] * np.exp(-r * dt * (exercise_time[itm_indices] - t))
 
         # current asset prices (itm only)
-        X = S_paths[itm_indices, t]
+        # Reduce across asset dimension so X is (num_paths_itm,)
+        X = S_paths[itm_indices, t].sum(axis=1)
 
         # ran into issues when there were too few asset prices in the money
         if len(X) < 4:
