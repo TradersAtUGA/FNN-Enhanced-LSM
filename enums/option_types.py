@@ -20,4 +20,4 @@ class OptionSide(Enum):
 class CorrelationType(Enum):
     UNIFORM = "uniform",
     IDENTITY = "identity",
-    CUSTOM = "custom"
+    CUSTOM = "custom" 
